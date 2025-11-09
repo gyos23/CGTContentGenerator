@@ -29,6 +29,25 @@ export interface GeneratedContent {
   supportingNotes: string[];
 }
 
+export interface ThemeCampaignPlan {
+  themeHeadline: string;
+  narrativeNorthStar: string;
+  campaign: {
+    name: string;
+    format: string;
+    cadence: string;
+    description: string;
+    posts: { id: number; title: string; promise: string; callToAction: string }[];
+  };
+  shotList: GeneratedShot[];
+  script: {
+    hook: string;
+    beats: { label: string; detail: string }[];
+    closer: string;
+    deliveryNotes: string;
+  };
+}
+
 const toneDescriptors: Record<ContentPreferences["tone"], string> = {
   educational: "Teach & transform",
   inspirational: "Elevate & inspire",
@@ -158,6 +177,14 @@ function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+function toTitleCase(value: string): string {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => capitalize(word.toLowerCase()))
+    .join(" ");
+}
+
 function craftScriptBeats(prefs: ContentPreferences): GeneratedContent["scriptBeats"] {
   const beats: GeneratedContent["scriptBeats"] = [
     {
@@ -235,5 +262,218 @@ export function generateContent(prefs: ContentPreferences): GeneratedContent {
     shots,
     scriptBeats,
     supportingNotes
+  };
+}
+
+const campaignArchetypes = [
+  {
+    key: "launch",
+    name: "Countdown Momentum",
+    format: "3-part reveal series",
+    cadence: "3 posts over 6 days",
+    description:
+      "Warm the audience, deliver the transformation, and rally them into the offer window.",
+    postBlueprint: [
+      {
+        title: "Spark the Curiosity",
+        promise: (theme: string) => `Announce the shift: why ${theme} matters right now.`
+      },
+      {
+        title: "Prove the Transformation",
+        promise: (theme: string) => `Show behind-the-scenes receipts of ${theme} coming alive.`
+      },
+      {
+        title: "Activate the Action",
+        promise: (theme: string) => `Deliver a bold CTA tying ${theme} to a tangible next step.`
+      }
+    ]
+  },
+  {
+    key: "education",
+    name: "Teach & Triumph",
+    format: "4-part mini masterclass",
+    cadence: "4 posts across two weeks",
+    description:
+      "Educate through bite-sized lessons, layer proof, and invite deeper engagement.",
+    postBlueprint: [
+      {
+        title: "The Mindset Shift",
+        promise: (theme: string) => `Reframe how your audience should think about ${theme}.`
+      },
+      {
+        title: "The Framework",
+        promise: (theme: string) => `Break ${theme} into 3 actionable moves they can swipe today.`
+      },
+      {
+        title: "Field Proof",
+        promise: (theme: string) => `Share a client or personal story showing ${theme} in motion.`
+      },
+      {
+        title: "Invite the Next Step",
+        promise: (theme: string) => `Point to your offer or lead magnet that deepens ${theme}.`
+      }
+    ]
+  },
+  {
+    key: "community",
+    name: "Community Pulse",
+    format: "5-post conversation arc",
+    cadence: "5 posts over 10 days",
+    description:
+      "Spark dialogue, spotlight voices, and co-create moments around the theme.",
+    postBlueprint: [
+      {
+        title: "The Invitation",
+        promise: (theme: string) => `Ask a provocative question about ${theme} to start the dialogue.`
+      },
+      {
+        title: "The Hot Take",
+        promise: (theme: string) => `Drop your bold perspective on ${theme} and why it matters.`
+      },
+      {
+        title: "The Spotlight",
+        promise: (theme: string) => `Feature a community member or client riffing on ${theme}.`
+      },
+      {
+        title: "The Challenge",
+        promise: (theme: string) => `Give them a quick action to embody ${theme} this week.`
+      },
+      {
+        title: "The Debrief",
+        promise: (theme: string) => `Recap wins, learnings, and tease what's next for ${theme}.`
+      }
+    ]
+  }
+];
+
+function selectArchetype(theme: string) {
+  const normalized = theme.toLowerCase();
+
+  if (/(launch|reveal|drop|debut)/.test(normalized)) {
+    return campaignArchetypes[0];
+  }
+
+  if (/(framework|educat|playbook|system|masterclass|guide)/.test(normalized)) {
+    return campaignArchetypes[1];
+  }
+
+  if (/(community|conversation|story|series|crowd)/.test(normalized)) {
+    return campaignArchetypes[2];
+  }
+
+  return campaignArchetypes[1];
+}
+
+function craftThemeShotList(theme: string): GeneratedShot[] {
+  const titleCaseTheme = toTitleCase(theme);
+
+  return [
+    {
+      id: 1,
+      type: "Hero reveal",
+      description: `Wide opener introducing the world of ${titleCaseTheme}.`,
+      details: "Use dynamic camera motion or a slider to create cinematic energy."
+    },
+    {
+      id: 2,
+      type: "Core narrative",
+      description: `Direct-to-camera delivery outlining the promise of ${titleCaseTheme}.`,
+      details: "Frame chest-up, keep eye-line locked, and gesture with purpose."
+    },
+    {
+      id: 3,
+      type: "Proof point",
+      description: `Overlay metrics, testimonials, or BTS moments that back up ${titleCaseTheme}.`,
+      details: "Mix screen recordings with kinetic typography for punch."
+    },
+    {
+      id: 4,
+      type: "Immersive detail",
+      description: `Macro or texture shots that symbolize ${titleCaseTheme} in action.`,
+      details: "Capture tactile moments—hands, tools, behind-the-scenes grit."
+    },
+    {
+      id: 5,
+      type: "Call-to-action",
+      description: `Closing setup where you invite viewers deeper into ${titleCaseTheme}.`,
+      details: "On-screen text plus verbal CTA directing to the campaign next step."
+    }
+  ];
+}
+
+function craftThemeScript(theme: string) {
+  const titleCaseTheme = toTitleCase(theme);
+
+  return {
+    hook: `What if ${titleCaseTheme} was the spark that redefined your next launch?`,
+    beats: [
+      {
+        label: "Scene 1",
+        detail: `Paint the before state—what the audience risks if they ignore ${titleCaseTheme}.`
+      },
+      {
+        label: "Scene 2",
+        detail: `Reveal the turning point that proves ${titleCaseTheme} can deliver fast wins.`
+      },
+      {
+        label: "Scene 3",
+        detail: `Demonstrate how your offer operationalizes ${titleCaseTheme} step by step.`
+      }
+    ],
+    closer: `Ready to build with ${titleCaseTheme}? Drop a "READY" and I'll send the full breakdown.`,
+    deliveryNotes: "Aim for 55-60 seconds. Pace like a cinematic trailer: hook hard, breathe in the middle, punch the CTA."
+  };
+}
+
+function describeNorthStar(theme: string): string {
+  const normalized = theme.toLowerCase();
+
+  if (normalized.includes("ai")) {
+    return "Blend human-led storytelling with smart automation.";
+  }
+
+  if (/(wellness|health|mind|soul)/.test(normalized)) {
+    return "Make the transformation feel tactile, calm, and attainable.";
+  }
+
+  if (/(brand|identity|design)/.test(normalized)) {
+    return "Lead with a visual narrative that feels bespoke and art-directed.";
+  }
+
+  if (/(launch|product|offer)/.test(normalized)) {
+    return "Build anticipation, tease the payoff, and spotlight the moment of drop.";
+  }
+
+  return "Anchor the message in tangible change and clear next steps.";
+}
+
+export function generateThemeCampaign(theme: string): ThemeCampaignPlan {
+  const trimmedTheme = theme.trim();
+  const archetype = selectArchetype(trimmedTheme);
+  const themeHeadline = `${toTitleCase(trimmedTheme)} Campaign Blueprint`;
+  const narrativeNorthStar = describeNorthStar(trimmedTheme);
+
+  const posts = archetype.postBlueprint.map((post, index) => ({
+    id: index + 1,
+    title: post.title,
+    promise: post.promise(trimmedTheme),
+    callToAction:
+      index === archetype.postBlueprint.length - 1
+        ? "Primary CTA: drive to offer or waitlist"
+        : "Secondary CTA: comment or share insights"
+  }));
+
+  return {
+    themeHeadline,
+    narrativeNorthStar,
+    campaign: {
+      name: archetype.name,
+      format: archetype.format,
+      cadence: archetype.cadence,
+      description: archetype.description,
+      posts
+    },
+    shotList: craftThemeShotList(trimmedTheme),
+    script: craftThemeScript(trimmedTheme)
   };
 }
