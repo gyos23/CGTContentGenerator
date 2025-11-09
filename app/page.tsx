@@ -74,11 +74,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generated, setGenerated] = useState<GeneratedContent>(() => generateContent(defaultPrefs));
   const [themePrompt, setThemePrompt] = useState(defaultTheme);
-  const [themeMode, setThemeMode] = useState<ThemeGenerationMode>("campaign");
-  const [themePostCount, setThemePostCount] = useState(3);
-  const [themePlan, setThemePlan] = useState<ThemeCampaignPlan>(() =>
-    generateThemeCampaign(defaultTheme, "campaign", 3)
-  );
+  const [themePlan, setThemePlan] = useState<ThemeCampaignPlan>(() => generateThemeCampaign(defaultTheme));
   const [isThemeGenerating, setIsThemeGenerating] = useState(false);
 
   const platformLabel = useMemo(() => {
@@ -111,13 +107,7 @@ export default function Home() {
     setIsThemeGenerating(true);
 
     setTimeout(() => {
-      setThemePlan(
-        generateThemeCampaign(
-          themePrompt,
-          themeMode,
-          themeMode === "campaign" ? themePostCount : undefined
-        )
-      );
+      setThemePlan(generateThemeCampaign(themePrompt));
       setIsThemeGenerating(false);
     }, 320);
   };
@@ -134,14 +124,6 @@ export default function Home() {
 
   const handleThemeChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setThemePrompt(event.target.value);
-  };
-
-  const handleThemeModeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setThemeMode(event.target.value as ThemeGenerationMode);
-  };
-
-  const handleThemePostCountChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setThemePostCount(Number(event.target.value));
   };
 
   return (
@@ -173,7 +155,7 @@ export default function Home() {
               activeGenerator === "theme" ? styles.tabButtonActive : ""
             }`}
           >
-            Post idea generator
+            Theme campaign lab
           </button>
         </div>
 
@@ -185,98 +167,74 @@ export default function Home() {
                 <div className={styles.formGrid}>
                   <div className={styles.formRow}>
                     <label htmlFor="businessType">Business type</label>
-                    <select
+                    <input
                       id="businessType"
                       name="businessType"
                       value={prefs.businessType}
                       onChange={handleInputChange}
-                    >
-                      {businessTypeOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="Creative agency, personal brand, studio..."
+                      required
+                    />
                   </div>
 
                   <div className={styles.formRow}>
                     <label htmlFor="brandVoice">Brand voice</label>
-                    <select
+                    <input
                       id="brandVoice"
                       name="brandVoice"
                       value={prefs.brandVoice}
                       onChange={handleInputChange}
-                    >
-                      {brandVoiceOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="e.g. punchy, cinematic, warm"
+                      required
+                    />
                   </div>
 
                   <div className={styles.formRow}>
                     <label htmlFor="targetAudience">Primary audience</label>
-                    <select
+                    <input
                       id="targetAudience"
                       name="targetAudience"
                       value={prefs.targetAudience}
                       onChange={handleInputChange}
-                    >
-                      {targetAudienceOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="e.g. service-based founders"
+                      required
+                    />
                   </div>
 
                   <div className={styles.formRow}>
                     <label htmlFor="primaryOffer">Signature offer</label>
-                    <select
+                    <input
                       id="primaryOffer"
                       name="primaryOffer"
                       value={prefs.primaryOffer}
                       onChange={handleInputChange}
-                    >
-                      {primaryOfferOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="What are you selling?"
+                      required
+                    />
                   </div>
 
                   <div className={styles.formRow}>
                     <label htmlFor="signatureStyle">Visual signature</label>
-                    <select
+                    <input
                       id="signatureStyle"
                       name="signatureStyle"
                       value={prefs.signatureStyle}
                       onChange={handleInputChange}
-                    >
-                      {signatureStyleOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="Describe your look & feel"
+                      required
+                    />
                   </div>
 
                   <div className={styles.formRow}>
                     <label htmlFor="contentPillars">Content pillars</label>
-                    <select
+                    <textarea
                       id="contentPillars"
                       name="contentPillars"
                       value={prefs.contentPillars}
                       onChange={handleInputChange}
-                    >
-                      {contentPillarOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                      rows={3}
+                      placeholder="Separate with commas or new lines"
+                    />
                   </div>
 
                   <div className={styles.formRow}>
@@ -421,7 +379,7 @@ export default function Home() {
           ) : (
             <>
               <form className={styles.card} onSubmit={handleThemeSubmit}>
-                <h2>Post idea lab</h2>
+                <h2>Theme-driven campaign</h2>
                 <div className={styles.formGrid}>
                   <div className={styles.formRow}>
                     <label htmlFor="themePrompt">Theme or topic</label>
@@ -435,43 +393,14 @@ export default function Home() {
                       required
                     />
                   </div>
-                  <div className={styles.formRow}>
-                    <label htmlFor="themeMode">Format</label>
-                    <select
-                      id="themeMode"
-                      name="themeMode"
-                      value={themeMode}
-                      onChange={handleThemeModeChange}
-                    >
-                      <option value="single">Single Instagram post</option>
-                      <option value="campaign">Campaign series</option>
-                    </select>
-                  </div>
-                  {themeMode === "campaign" ? (
-                    <div className={styles.formRow}>
-                      <label htmlFor="themePostCount">Number of posts</label>
-                      <select
-                        id="themePostCount"
-                        name="themePostCount"
-                        value={themePostCount}
-                        onChange={handleThemePostCountChange}
-                      >
-                        {[2, 3, 4, 5].map((count) => (
-                          <option key={count} value={count}>
-                            {count} posts
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ) : null}
                 </div>
                 <p className={styles.helperText}>
                   Use a focus like <q>AI storytelling for wedding filmmakers</q> or{' '}
-                  <q>5-part nurture around our new offer</q> and we&apos;ll return IG-ready
-                  scripts, shot lists, and CTAs for each idea.
+                  <q>5-part nurture around our new offer</q>.
+                  Use a focus like "AI storytelling for wedding filmmakers" or "5-part nurture around our new offer".
                 </p>
                 <button className={styles.generateButton} type="submit" disabled={isThemeGenerating}>
-                  {isThemeGenerating ? "Mapping your ideas..." : "Generate ready-to-shoot ideas"}
+                  {isThemeGenerating ? "Mapping your campaign..." : "Generate campaign plan"}
                 </button>
               </form>
 
@@ -479,35 +408,16 @@ export default function Home() {
                 <h2>{themePlan.themeHeadline}</h2>
                 <div className={styles.badgeRow}>
                   <span className={styles.badge}>{themePlan.narrativeNorthStar}</span>
-                  <span className={styles.badge}>
-                    {themePlan.mode === "campaign"
-                      ? themePlan.campaign?.scopeLabel ?? `${themePlan.posts.length}-post rollout`
-                      : "Single post build"}
-                  </span>
-                  {themePlan.campaign ? (
-                    <>
-                      <span className={styles.badge}>{themePlan.campaign.format}</span>
-                      <span className={styles.badge}>{themePlan.campaign.cadence}</span>
-                    </>
-                  ) : (
-                    <span className={styles.badge}>IG-ready scripting</span>
-                  )}
+                  <span className={styles.badge}>{themePlan.campaign.format}</span>
+                  <span className={styles.badge}>{themePlan.campaign.cadence}</span>
                 </div>
 
                 <div className={styles.results}>
                   <section className={styles.section}>
-                    <h3>
-                      {themePlan.mode === "campaign"
-                        ? themePlan.campaign?.name ?? "Campaign outline"
-                        : "Concept outline"}
-                    </h3>
-                    {themePlan.campaign ? (
-                      <p className={styles.sectionLead}>{themePlan.campaign.description}</p>
-                    ) : (
-                      <p className={styles.sectionLead}>Single post concept engineered for your theme.</p>
-                    )}
+                    <h3>{themePlan.campaign.name}</h3>
+                    <p className={styles.sectionLead}>{themePlan.campaign.description}</p>
                     <ul className={styles.highlightList}>
-                      {themePlan.posts.map((post) => (
+                      {themePlan.campaign.posts.map((post) => (
                         <li key={post.id}>
                           <strong>
                             {post.id}. {post.title}:
@@ -520,51 +430,39 @@ export default function Home() {
                   </section>
 
                   <section className={styles.section}>
-                    <h3>Production kits</h3>
-                    <div className={styles.postGrid}>
-                      {themePlan.posts.map((post) => (
-                        <div key={post.id} className={styles.postCard}>
+                    <h3>Shot list</h3>
+                    <div className={styles.shotGrid}>
+                      {themePlan.shotList.map((shot) => (
+                        <div key={shot.id} className={styles.shotCard}>
                           <h4>
-                            {post.id}. {post.title}
+                            {shot.id}. {shot.type}
                           </h4>
-                          <p className={styles.postPromise}>{post.promise}</p>
-                          <span className={styles.inlineTag}>{post.callToAction}</span>
-
-                          <div className={styles.postSubsection}>
-                            <h5>Shot list</h5>
-                            <ul className={styles.highlightList}>
-                              {post.shots.map((shot) => (
-                                <li key={shot.id}>
-                                  <strong>
-                                    {shot.id}. {shot.type}:
-                                  </strong>{" "}
-                                  {shot.description}
-                                  <br />
-                                  <span className={styles.subtleNote}>{shot.details}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          <div className={styles.postSubsection}>
-                            <h5>Script</h5>
-                            <p>
-                              <strong>Hook:</strong> {post.script.hook}
-                            </p>
-                            <ul className={styles.highlightList}>
-                              {post.script.beats.map((beat) => (
-                                <li key={beat.label}>
-                                  <strong>{beat.label}:</strong> {beat.detail}
-                                </li>
-                              ))}
-                            </ul>
-                            <p>
-                              <strong>Closer:</strong> {post.script.closer}
-                            </p>
-                            <p className={styles.helperText}>{post.script.deliveryNotes}</p>
-                          </div>
+                          <p>{shot.description}</p>
+                          <p>
+                            <strong>Direction:</strong> {shot.details}
+                          </p>
                         </div>
                       ))}
+                    </div>
+                  </section>
+
+                  <section className={styles.section}>
+                    <h3>Full script blueprint</h3>
+                    <div className={styles.scriptBlock}>
+                      <p>
+                        <strong>Hook:</strong> {themePlan.script.hook}
+                      </p>
+                      <ul className={styles.highlightList}>
+                        {themePlan.script.beats.map((beat) => (
+                          <li key={beat.label}>
+                            <strong>{beat.label}:</strong> {beat.detail}
+                          </li>
+                        ))}
+                      </ul>
+                      <p>
+                        <strong>Closer:</strong> {themePlan.script.closer}
+                      </p>
+                      <p className={styles.helperText}>{themePlan.script.deliveryNotes}</p>
                     </div>
                   </section>
                 </div>
