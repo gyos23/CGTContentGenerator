@@ -348,6 +348,8 @@ export default function Home() {
                   </div>
                 </div>
                 <p className={styles.helperText}>
+                  Use a focus like <q>AI storytelling for wedding filmmakers</q> or{' '}
+                  <q>5-part nurture around our new offer</q>.
                   Use a focus like "AI storytelling for wedding filmmakers" or "5-part nurture around our new offer".
                 </p>
                 <button className={styles.generateButton} type="submit" disabled={isThemeGenerating}>
