@@ -29,23 +29,35 @@ export interface GeneratedContent {
   supportingNotes: string[];
 }
 
-export interface ThemeCampaignPlan {
-  themeHeadline: string;
-  narrativeNorthStar: string;
-  campaign: {
-    name: string;
-    format: string;
-    cadence: string;
-    description: string;
-    posts: { id: number; title: string; promise: string; callToAction: string }[];
-  };
-  shotList: GeneratedShot[];
+export type ThemeGenerationMode = "single" | "campaign";
+
+export interface ThemePostPlan {
+  id: number;
+  title: string;
+  promise: string;
+  callToAction: string;
+  shots: GeneratedShot[];
   script: {
     hook: string;
     beats: { label: string; detail: string }[];
     closer: string;
     deliveryNotes: string;
   };
+}
+
+export interface ThemeCampaignPlan {
+  themeHeadline: string;
+  narrativeNorthStar: string;
+  mode: ThemeGenerationMode;
+  campaign?: {
+    name: string;
+    format: string;
+    cadence: string;
+    description: string;
+    postCount: number;
+    scopeLabel: string;
+  };
+  posts: ThemePostPlan[];
 }
 
 const toneDescriptors: Record<ContentPreferences["tone"], string> = {
@@ -364,64 +376,96 @@ function selectArchetype(theme: string) {
   return campaignArchetypes[1];
 }
 
-function craftThemeShotList(theme: string): GeneratedShot[] {
+function craftThemeIdeaShots(
+  theme: string,
+  postTitle: string,
+  callToAction: string,
+  index: number
+): GeneratedShot[] {
   const titleCaseTheme = toTitleCase(theme);
+  const openerStyles = [
+    "match-cut opener",
+    "whip-pan reveal",
+    "quick smash zoom",
+    "clean slider move"
+  ];
+  const proofStyles = [
+    "overlay metrics",
+    "testimonial pull-quote",
+    "process b-roll",
+    "before-and-after carousel"
+  ];
 
   return [
     {
       id: 1,
-      type: "Hero reveal",
-      description: `Wide opener introducing the world of ${titleCaseTheme}.`,
-      details: "Use dynamic camera motion or a slider to create cinematic energy."
+      type: "Hook visual",
+      description: `Two-second pattern interrupt teasing the ${postTitle.toLowerCase()} angle of ${titleCaseTheme}.`,
+      details: `Use a ${openerStyles[index % openerStyles.length]} to instantly signal motion and authority.`
     },
     {
       id: 2,
-      type: "Core narrative",
-      description: `Direct-to-camera delivery outlining the promise of ${titleCaseTheme}.`,
-      details: "Frame chest-up, keep eye-line locked, and gesture with purpose."
+      type: "Message delivery",
+      description: `Direct-to-camera beat explaining the promise: ${postTitle}.`,
+      details: "Frame chest-up, anchor eye contact, and pace the dialogue to land each key point."
     },
     {
       id: 3,
-      type: "Proof point",
-      description: `Overlay metrics, testimonials, or BTS moments that back up ${titleCaseTheme}.`,
-      details: "Mix screen recordings with kinetic typography for punch."
+      type: "Proof moment",
+      description: `Cutaways that show ${titleCaseTheme} in action—think ${proofStyles[index % proofStyles.length]}.`,
+      details: "Layer captions or kinetic text so the payoff reads even without sound."
     },
     {
       id: 4,
-      type: "Immersive detail",
-      description: `Macro or texture shots that symbolize ${titleCaseTheme} in action.`,
-      details: "Capture tactile moments—hands, tools, behind-the-scenes grit."
-    },
-    {
-      id: 5,
-      type: "Call-to-action",
-      description: `Closing setup where you invite viewers deeper into ${titleCaseTheme}.`,
-      details: "On-screen text plus verbal CTA directing to the campaign next step."
+      type: "CTA hold",
+      description: `On-screen prompt reinforcing ${callToAction}.`,
+      details: "Hold the final frame for two beats with gesture toward the caption or DM sticker."
     }
   ];
 }
 
-function craftThemeScript(theme: string) {
+function craftThemeIdeaScript(
+  theme: string,
+  postTitle: string,
+  promise: string,
+  callToAction: string,
+  index: number
+) {
   const titleCaseTheme = toTitleCase(theme);
+  const hookAngles = [
+    `If ${titleCaseTheme} had a ${postTitle.toLowerCase()} moment, this is what it looks like.`,
+    `You haven't seen ${titleCaseTheme.toLowerCase()} framed like this ${postTitle.toLowerCase()} before.`,
+    `Here's how we turn ${titleCaseTheme.toLowerCase()} into a ${postTitle.toLowerCase()} that converts.`,
+    `Watch us build a ${postTitle.toLowerCase()} around ${titleCaseTheme} in real time.`
+  ];
+
+  const deliveryNotes = [
+    "Aim for 35-45 seconds. Keep cuts tight and energy high.",
+    "Shoot in vertical 9:16. Use captions to underline key phrases.",
+    "Let pacing breathe in the middle so viewers can absorb the proof.",
+    "Close with confident body language—point to DM sticker or caption."
+  ];
+
+  const scriptBeats = [
+    {
+      label: "Set the tension",
+      detail: `Name the stakes or frustration that ${promise.toLowerCase()} solves.`
+    },
+    {
+      label: "Show the shift",
+      detail: `Reveal the signature move that makes ${titleCaseTheme.toLowerCase()} feel fresh.`
+    },
+    {
+      label: "Give the action",
+      detail: `Hand them one tangible step or resource tied to ${postTitle.toLowerCase()}.`
+    }
+  ];
 
   return {
-    hook: `What if ${titleCaseTheme} was the spark that redefined your next launch?`,
-    beats: [
-      {
-        label: "Scene 1",
-        detail: `Paint the before state—what the audience risks if they ignore ${titleCaseTheme}.`
-      },
-      {
-        label: "Scene 2",
-        detail: `Reveal the turning point that proves ${titleCaseTheme} can deliver fast wins.`
-      },
-      {
-        label: "Scene 3",
-        detail: `Demonstrate how your offer operationalizes ${titleCaseTheme} step by step.`
-      }
-    ],
-    closer: `Ready to build with ${titleCaseTheme}? Drop a "READY" and I'll send the full breakdown.`,
-    deliveryNotes: "Aim for 55-60 seconds. Pace like a cinematic trailer: hook hard, breathe in the middle, punch the CTA."
+    hook: hookAngles[index % hookAngles.length],
+    beats: scriptBeats,
+    closer: callToAction,
+    deliveryNotes: deliveryNotes[index % deliveryNotes.length]
   };
 }
 
@@ -447,33 +491,60 @@ function describeNorthStar(theme: string): string {
   return "Anchor the message in tangible change and clear next steps.";
 }
 
-export function generateThemeCampaign(theme: string): ThemeCampaignPlan {
+export function generateThemeCampaign(
+  theme: string,
+  mode: ThemeGenerationMode,
+  requestedCount?: number
+): ThemeCampaignPlan {
   const trimmedTheme = theme.trim();
   const archetype = selectArchetype(trimmedTheme);
-  const themeHeadline = `${toTitleCase(trimmedTheme)} Campaign Blueprint`;
+  const titleCaseTheme = toTitleCase(trimmedTheme);
   const narrativeNorthStar = describeNorthStar(trimmedTheme);
+  const totalPosts =
+    mode === "campaign"
+      ? Math.max(2, Math.min(requestedCount ?? 3, archetype.postBlueprint.length))
+      : 1;
 
-  const posts = archetype.postBlueprint.map((post, index) => ({
-    id: index + 1,
-    title: post.title,
-    promise: post.promise(trimmedTheme),
-    callToAction:
-      index === archetype.postBlueprint.length - 1
-        ? "Primary CTA: drive to offer or waitlist"
-        : "Secondary CTA: comment or share insights"
-  }));
+  const selectedBlueprint = archetype.postBlueprint.slice(0, totalPosts);
 
-  return {
+  const posts = selectedBlueprint.map((post, index) => {
+    const postPromise = post.promise(trimmedTheme);
+    const callToAction =
+      totalPosts === 1
+        ? `DM "READY" for the ${titleCaseTheme} breakdown.`
+        : index === totalPosts - 1
+          ? `DM "READY" for the ${titleCaseTheme} roadmap.`
+          : `Comment "IN" if you're riding with ${titleCaseTheme.toLowerCase()}.`;
+
+    return {
+      id: index + 1,
+      title: post.title,
+      promise: postPromise,
+      callToAction,
+      shots: craftThemeIdeaShots(trimmedTheme, post.title, callToAction, index),
+      script: craftThemeIdeaScript(trimmedTheme, post.title, postPromise, callToAction, index)
+    };
+  });
+
+  const themeHeadline = `${titleCaseTheme} ${mode === "campaign" ? "Campaign" : "Post"} Blueprint`;
+
+  const plan: ThemeCampaignPlan = {
     themeHeadline,
     narrativeNorthStar,
-    campaign: {
+    mode,
+    posts
+  };
+
+  if (mode === "campaign") {
+    plan.campaign = {
       name: archetype.name,
       format: archetype.format,
       cadence: archetype.cadence,
       description: archetype.description,
-      posts
-    },
-    shotList: craftThemeShotList(trimmedTheme),
-    script: craftThemeScript(trimmedTheme)
-  };
+      postCount: totalPosts,
+      scopeLabel: `${totalPosts}-post rollout`
+    };
+  }
+
+  return plan;
 }

@@ -7,6 +7,13 @@ A Next.js app for crafting scroll-stopping content blueprints tailored to your b
 - Script beats aligned with your CTA
 - Director notes tuned to platform and production level
 
+Need a bigger-picture content push? Switch to the **Theme Campaign Lab** tab to input a single topic and auto-generate:
+
+- A flagship narrative headline and north star
+- Suggested campaign cadence and post-by-post plan
+- Supporting shot lists for each deliverable
+- Fully scripted beats you can adapt to camera or teleprompter
+
 Designed for quick deployment to Vercel.
 
 ## Getting started

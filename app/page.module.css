@@ -236,6 +236,52 @@
   gap: 0.75rem;
 }
 
+.postGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.postCard {
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  background: rgba(248, 250, 252, 0.95);
+  display: grid;
+  gap: 0.9rem;
+}
+
+.postCard h4 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.postPromise {
+  margin: 0;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
+.postSubsection {
+  border-top: 1px solid rgba(203, 213, 225, 0.6);
+  padding-top: 0.75rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.postSubsection h5 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #1d4ed8;
+}
+
+.subtleNote {
+  display: block;
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
 @media (max-width: 768px) {
   .main {
     padding: 2rem 1.1rem 3rem;

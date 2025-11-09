@@ -2,7 +2,12 @@
 
 import { useMemo, useState } from "react";
 import styles from "./page.module.css";
-import type { ContentPreferences, GeneratedContent, ThemeCampaignPlan } from "../lib/generateContent";
+import type {
+  ContentPreferences,
+  GeneratedContent,
+  ThemeCampaignPlan,
+  ThemeGenerationMode
+} from "../lib/generateContent";
 import { generateContent, generateThemeCampaign } from "../lib/generateContent";
 
 const defaultPrefs: ContentPreferences = {
@@ -20,6 +25,48 @@ const defaultPrefs: ContentPreferences = {
 };
 
 const defaultTheme = "Cinematic reveal of our AI-assisted content sprint service";
+
+const businessTypeOptions = [
+  "Creative growth studio",
+  "Personal brand consultancy",
+  "Fractional CMO collective",
+  "Video production agency"
+];
+
+const brandVoiceOptions = [
+  "Bold, cinematic, strategic",
+  "Warm, story-driven, collaborative",
+  "Playful, punchy, disruptive",
+  "Minimal, refined, confident"
+];
+
+const targetAudienceOptions = [
+  "service-based founders",
+  "creative entrepreneurs",
+  "agency owners",
+  "course creators"
+];
+
+const primaryOfferOptions = [
+  "content-to-client blueprint",
+  "done-for-you launch accelerator",
+  "signature storytelling intensive",
+  "retainer video partnership"
+];
+
+const signatureStyleOptions = [
+  "high-contrast cinematic",
+  "minimal monochrome",
+  "color-drenched kinetic",
+  "organic documentary"
+];
+
+const contentPillarOptions = [
+  "Signature story arc, Offer breakdown, Community proof",
+  "Authority mini-lessons, Behind-the-scenes, Client wins",
+  "Trend remix, Value stack, Conversion CTA",
+  "Mindset shifts, Process tour, Launch runway"
+];
 
 export default function Home() {
   const [activeGenerator, setActiveGenerator] = useState<"brand" | "theme">("brand");
